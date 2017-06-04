@@ -1,0 +1,102 @@
+#base_register,#base_sigin{
+  border-radius: 4px;
+}
+
+#div_background{
+position: fixed;
+width: 100%; 
+bottom: 0px; 
+right: 0px; 
+left: 0px; 
+top: 0px; 
+background:#000; 
+opacity: 0.6; 
+z-index: 8888;
+}
+#singin_container{
+  
+  margin: auto;
+  position: fixed;
+  top: 0; left: 0; bottom: 0; right: 0;
+  width: 320px; 
+  height: 260px;
+  background: rgb(248, 246, 233);
+  z-index: 9999;
+}
+
+#header_signin{
+  margin-top: 5%;
+}
+
+#header_signin .header_s{
+margin-left:88px;
+}
+
+#header_signin .header_r{
+margin-left:108px;
+}
+
+#header_close {
+float: right;
+margin-top: 2%;
+margin-right: 2%;
+}
+
+#bomp_username{
+margin-top:5%;
+margin-left:3%;
+margin-right:3%;
+}
+
+#bomp_pwd{
+margin-top:5%;
+margin-left:3%;
+margin-right:3%;
+}
+
+#bomp_nickname{
+margin-top:5%;
+margin-left:3%;
+margin-right:3%;}
+
+#bomp_email{
+margin-top:5%;
+margin-left:3%;
+margin-right:3%;}
+
+#bomp_submit{
+margin-top:5%;
+width: 94%;
+margin-left: 3%;
+}
+
+
+#header_signin a{
+font-size:20px;
+	
+}
+
+#header_signin a:hover{
+text-decoration:none;	
+}
+
+#singin_container #header_close:hover{
+text-decoration:none; 
+}
+
+#div_signin span{
+	display:inline-block;
+}
+
+#span_nickname{
+display:none;
+}
+
+/*给div中的span文字居中*/
+#showText{
+color: red;
+display:block;
+width:100%;
+text-align:center;
+}
+

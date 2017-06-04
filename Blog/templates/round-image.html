@@ -1,0 +1,183 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Cropper.js</title>
+  <link rel="stylesheet" href="../dist/cropper.css">
+  <style>
+    .container {
+      width: 500px;
+      margin: 20px auto;
+	  algin:center;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    .cropper-view-box,
+    .cropper-face {
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Crop a round image</h1>
+    <h3>Image</h3>
+    <div class="container1">
+      <img id="image" src="" alt="Picture">
+    </div>
+	<input type="file">
+    <h3>Result</h3>
+    <p>
+      <button type="button" id="button">Crop</button>
+    </p>
+    <div id="result"></div>
+  </div>
+
+  <script src="../dist/cropper.js"></script>
+
+</body>
+
+  <script src="../dist/jquery.min.js"></script>
+<script>
+//上传图片触发这个事件
+	$("input[type=file]").on("change",  function(event){
+		
+//value的值会显示路径文件路径地址，显示C:\fakepath\*.jpg
+if(!this.value) return;
+var file = this.files[0];
+
+readImgFile(file);
+
+
+});
+
+function readImgFile(file){
+var reader = new FileReader(file);
+var img = $("#image")[0];
+console.log(img);
+//检验用户是否选则是图片文件
+if(file.type.split("/")[0] !== "image"){
+alert("You should choose an image file");
+return;};
+
+//这个函数是异步的，在readAsDataURL之后触发,在return之后才执行,这里要取异步执行之后的结果。
+
+
+//读取文件内容，readAsDataURL这个api能够把二进制图片内容转成base64的格式。
+reader.readAsDataURL(file);
+
+//异步事件
+reader.onload = function(event) {
+//获取file的base64码
+var base64 = event.target.result;
+console.log(base64);
+img.src = base64;
+$(".container").width(img.width+60);
+console.log($(".container").width);
+init();
+
+
+//返回画布对象
+// createCanvas(img);
+
+ 
+
+console.log('xxxxxxxx');	
+
+//filesize=file.size/1024;//转换为kb
+};
+};
+
+/*
+function createCanvas(img){
+
+console.log(img.naturalWidth);
+//<canvas>有自己的默认宽高300px*150px，
+img.onload=function(){
+cvs.width = img.naturalWidth;
+cvs.height = img.naturalHeight;
+ctx.drawImage(img,0,0);
+
+};
+//创建画布
+var cvs = document.createElement('canvas');
+var ctx=cvs.getContext("2d");
+
+//$(".container")[0].appendChild(cvs);
+}*/
+
+function init() {
+        var image = document.getElementById('image');
+        var button = document.getElementById('button');
+        var result = document.getElementById('result');
+        var croppable = false;
+        var cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+		  //控制那个截图的圈是否可以放大
+		  cropBoxResizable:false,
+		  toggleDragModeOnDblclick:true,
+		  //background:false,
+          ready: function () {
+            croppable = true;
+          }
+        });
+
+        button.onclick = function () {
+          var croppedCanvas;
+          var roundedCanvas;
+          var roundedImage;
+
+          if (!croppable) {
+            return;
+          }
+
+          // Crop
+          croppedCanvas = cropper.getCroppedCanvas();
+		console.log(croppedCanvas);
+          // Round
+          roundedCanvas = getRoundedCanvas(croppedCanvas);
+
+          // Show
+          roundedImage = document.createElement('img');
+          roundedImage.src = roundedCanvas.toDataURL()
+          result.innerHTML = '';
+		  console.log(roundedImage.src);
+          result.appendChild(roundedImage);
+        };
+
+      };
+	  
+	
+
+      function getRoundedCanvas(sourceCanvas) {
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        var width = sourceCanvas.width;
+        var height = sourceCanvas.height;
+		//画布设置宽高
+        canvas.width = width;
+        canvas.height = height;
+		//设置图片是否平滑的属性
+        context.imageSmoothingEnabled = true;
+        context.drawImage(sourceCanvas, 0, 0, width, height);
+		//在源图像中显示目标图像。只有源图像内的目标图像部分会被显示，源图像是透明的。
+		//控制截取之后的图像
+        context.globalCompositeOperation = 'destination-in';
+        context.beginPath();
+        context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+		//context.arc(width / 2, height / 2, 50, 0, 2 * Math.PI, true);
+        context.fill();
+
+        return canvas;
+      }
+    
+
+</script>
+</html>

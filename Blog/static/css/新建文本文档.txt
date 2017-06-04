@@ -1,0 +1,132 @@
+<script>
+/*
+//上传图片触发这个事件
+	$("input[type=file]").on("change",  function(event){
+		
+//value的值会显示路径文件路径地址，显示C:\fakepath\*.jpg
+if(!this.value) return;
+//获取图片文件
+var file = this.files[0];
+readImgFile(file);
+
+});
+
+function readImgFile(file){
+var reader = new FileReader(file);
+var img = $("#image")[0];
+console.log(img);
+//检验用户是否选则是图片文件
+if(file.type.split("/")[0] !== "image"){
+alert("请选择图片类型文件");
+return;
+};
+
+//这个函数是异步的，在readAsDataURL之后触发,在return之后才执行,这里要取异步执行之后的结果。
+
+
+//读取文件内容，readAsDataURL这个api能够把二进制图片内容转成base64的格式。
+reader.readAsDataURL(file);
+
+//异步事件
+reader.onload = function(event) {
+
+
+//获取file的base64码
+var base64 = event.target.result;
+console.log(base64);
+img.src = base64;
+
+};
+
+//这也是一个异步时间图片加载完成会调用
+img.onload=function(){	
+$(".container").width(img.naturalWidth+10);
+$(".container").height(img.naturalHeight+10);
+init();
+};
+
+// createCanvas(img);
+//filesize=file.size/1024;//转换为kb
+
+};
+/*
+function createCanvas(img){
+
+console.log(img.naturalWidth);
+//<canvas>有自己的默认宽高300px*150px，
+img.onload=function(){
+console.log(this.naturalWidth);
+};
+//创建画布
+var cvs = document.createElement('canvas');
+var ctx=cvs.getContext("2d");
+
+//$(".container")[0].appendChild(cvs);
+}*/
+ window.addEventListener('DOMContentLoaded',init);
+function init() {
+        var image = document.getElementById('image');
+        var button = document.getElementById('button');
+        var result = document.getElementById('result');
+        var croppable = false;
+        var cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+		  //控制那个截图的圈是否可以放大
+		  //cropBoxResizable:true,
+		  //toggleDragModeOnDblclick:true,
+		  //background:false,
+          ready: function () {
+            croppable = true;
+          }
+        });
+
+        button.onclick = function () {
+          var croppedCanvas;
+          var roundedCanvas;
+          var roundedImage;
+
+          if (!croppable) {
+            return;
+          }
+
+          // Crop
+          croppedCanvas = cropper.getCroppedCanvas();
+          // Round
+          roundedCanvas = getRoundedCanvas(croppedCanvas);
+          // Show
+          roundedImage = document.createElement('img');
+          roundedImage.src = roundedCanvas.toDataURL()
+          result.innerHTML = '';
+		  console.log(roundedImage.src);
+          result.appendChild(roundedImage);
+        };
+
+      };
+	  
+	
+
+      function getRoundedCanvas(sourceCanvas) {
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        var width = sourceCanvas.width;
+        var height = sourceCanvas.height;
+		//画布设置宽高
+        canvas.width = width;
+        canvas.height = height;
+		//设置图片是否平滑的属性
+        context.imageSmoothingEnabled = true;
+        context.drawImage(sourceCanvas, 0, 0, width, height);
+		//在源图像中显示目标图像。只有源图像内的目标图像部分会被显示，源图像是透明的。
+		//控制截取之后的图像
+        context.globalCompositeOperation = 'destination-in';
+        context.beginPath();
+        context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+		//context.arc(width / 2, height / 2, 50, 0, 2 * Math.PI, true);
+        context.fill();
+
+        return canvas;
+      };
+    
+*/
+</script>

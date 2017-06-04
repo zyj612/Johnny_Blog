@@ -1,0 +1,19 @@
+.newicon{
+	color:#1abc9c;
+}
+
+
+
+.weibo{
+		width: 52px;
+	font-family: "Microsoft YaHei",SimSun;
+	font-size: 12px;
+	font-weight: 400;‪
+	font-style: normal;
+	text-align: center;
+	padding-top: 60px;
+	float: left;
+	
+	}
+	.weibo {
+	background: url(../static/images/ico_xlwb2.png) no-repeat scroll 0% 0% transparent;

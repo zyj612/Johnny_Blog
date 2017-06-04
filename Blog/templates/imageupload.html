@@ -1,0 +1,139 @@
+﻿<html>
+<head>
+<title>
+</title>
+<style>
+#div1{width:198px;
+height:100px;
+border:1px solid #aaaaaa;
+
+}
+#drag1{
+z-index:20px;
+}
+#div1:after {
+    content:".";
+    display:block;
+    height:0;
+    clear:both;
+    visibility:hidden;
+}
+</style>
+</head>
+<body>
+<div id="div1">
+<img id="drag1"/>
+</div>
+<input type="file">
+</body>
+<script src="../static/js/jquery.js" type="text/javascript"></script>
+<script>
+/*ondragover 事件规定在何处放置被拖动的数据。
+默认情况下是无法把元素或者数据拖入其中的，需要阻止元素的默认处理方法
+function allDrop(ev){
+ev.prventDefault(}
+*/
+
+var handler = {
+	//$container是传进来的参数，包裹img的div
+init: function($container){
+//需要把dragover的默认行为禁掉，不然会跳页
+$container.on("dragover", function(event){
+event.preventDefault();
+}),
+//当文件放置进来的时候会自动调用这个drop方法
+$container.on("drop", function(event){
+event.preventDefault();
+//获取脱去过来的图片文件，一个file对象
+var file = event.originalEvent.dataTransfer.files[0];
+handler.handleDrop($(this), file);
+});
+},
+//读取file的内容
+handleDrop: function($container, file){
+var $img = $container.find("img");
+handler.readImgFile(file, $img, $container);
+},
+
+readImgFile: function(file, $img, $container){
+var reader = new FileReader(file);
+//检验用户是否选则是图片文件
+if(file.type.split("/")[0] !== "image"){
+alert("You should choose an image file");
+return;};
+
+reader.onload = function(event) {
+var base64 = event.target.result;
+console.log(base64);
+$img.get(0).src=base64;
+console.log($img[0]);
+console.log($img[0].width);
+//压缩图片,使用了默认类型image/png。
+var resultImg = handler.compress($img[0],1500,file.type);
+
+$img.get(0).src=resultImg.src;
+
+filesize=file.size/1024;//转换为kb
+if(filesize > 1024){
+$("body").css("opacity", 0.5);
+}
+//因为这里图片太大会被卡一下，整个页面会不可操作
+//$img.get(0).src=combase64;
+//还原
+if(filesize > 1024){
+$("body").css("opacity", 1);
+}
+//handler.compressAndUpload($img, base64, file, $container);
+};
+//读取文件内容，readAsDataURL这个api能够把二进制图片内容转成base64的格式。
+//读取的同时会调用reader.onload方法
+reader.readAsDataURL(file);
+},
+
+
+//压缩图片
+compress: function(img, maxWidth, mimeType){
+//创建一个canvas对象
+var cvs = document.createElement('canvas');
+//html5的属性，代表真实高度和宽度
+var width = img.naturalWidth;
+console.log(img);
+
+var height = img.naturalHeight;
+//压缩比率
+var imgRatio = width / height;
+//如果图片维度超过了给定的maxWidth 1500，
+//为了保持图片宽高比，计算画布的大小
+if(width > maxWidth){
+width = maxWidth;
+height = width / imgRatio;
+} 
+cvs.width = width;
+console.log(cvs.width);
+cvs.height = height;
+
+//把图片画到画布上
+var ctx = cvs.getContext('2d');
+ctx.drawImage(img,0,0,img.naturalWidth,img.naturalHeight,0,0,width,height);
+
+ var quality = width >= 1500 ? 0.5 :
+                    width > 600 ? 0.6 : 1;
+  //导出图片为base64
+  var newImageData = cvs.toDataURL(mimeType,quality);
+  console.log(newImageData);
+  //img.src=newImageData;
+
+  var resultImg = new Image();
+    resultImg.src = newImageData;
+
+ return resultImg;
+},
+
+
+};
+handler.init($('#div1'));
+
+</script>
+<script>
+</script>
+</html>

@@ -1,0 +1,11 @@
+
+.praisebtn
+{
+	line-height:36px;
+	font-family: Microsoft YaHei;
+	cursor: pointer;
+	text-align:center;
+}
+.praisebtn a{
+	display:inline-block;
+}

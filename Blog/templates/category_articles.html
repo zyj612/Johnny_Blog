@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title%} Johnny_Blog {% endblock %}
+{% block left-content %}
+	
+<h4>{{category_name.name}}</h4>
+<hr style="border:solid 1px;color:#45bcf9;"/>
+{% for article in category_articles %}
+		<div id="article-list">
+			<article class="excerpt excerpt-start">
+				<header>
+					<a class="cat" href="#">{{article.category}} <i></i></a>
+					<h2><a class="gotoArchive" href="/Archives/Index/1" title="开篇">{{article.title}}</a>
+					</h2>
+				</header>
+				<p class="meta">
+					<span class="posttime"><a class='iconfont' href="#">&#xe735;</a>{{article.date_publish|date:"Y/m/d"}}</span>
+
+					<span class="viewnum"><a class='iconfont' href="#">&#xe6e4;</a>浏览({{article.click_count}})</span>
+
+					<span class="commentnum"><a class='iconfont' href="/">&#xe704;</a>评论({{article.comment_set.all.count}})</span>
+
+					<span class="praisebtn"> <a class="iconfont" praise-flag="0" href="/">&#xe71a;</a> ({{article.click_count}}) </span>
+				</p>
+				<p class="note">{% autoescape off %} {{article.content}} {% endautoescape %}
+				</p>
+				<footer class="entry-footer">
+					<span itemprop="keywords" class="tags-links">
+
+
+					{% for tag in article.tag.all %}
+					<a rel="tag" href="/">{{tag}}</a>
+					{% endfor %}
+					<a class="more-link gotoArchive" rel="nofollow" href="{% url 'article' %}?id={{article.id}}">继续阅读 »</a>
+				</footer>
+			</article>
+		</div>
+
+
+	
+    {%  endfor %}
+
+{% endblock %} 

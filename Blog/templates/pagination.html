@@ -1,0 +1,26 @@
+<div class="pagination">
+  <!--pagation本来就是BootStrap的类，现在用的是自定义的Bootstrap类-->
+  <ul>
+    <li id="start-page"><a href="?page=1">首页</a></li>
+    {% if Article_list.has_previous %}
+      <li id="previous-page"><a href="?page={{Article_list.previous_page_number}}">上一页</a></li>
+    {% endif %}
+    
+
+    {% for page_num in Article_list.paginator.page_range_ext %}
+    {% if page_num == Article_list.number %}
+    <li class="active show-page"><span>{{page_num}}</span></li>
+    {% else %}
+    <li class="show-page"><a href="?page={{page_num}}">{{page_num}}</a></li>
+    {% endif %}
+    {% endfor %}
+
+    
+    {% if Article_list.has_next %}
+    <li class="next-page"><a href="?page={{Article_list.next_page_number}}">下一页</a></li>
+    {% endif %}
+
+    <li id="end-page"><a href="?page={{Article_list.paginator.num_pages}}">末页</a></li>
+    <li id="total-page"><span>共-{{Article_list.paginator.num_pages}}-页</span></li>
+  </ul>
+</div>

@@ -1,0 +1,1 @@
+<div id="loading" style="display: none;"> <img src="/Content/images/ico_loading2.gif" data-bd-imgshare-binded="1"> <span>正在提交, 请稍候...</span></div><div id="error" style="display: none;">#</div>

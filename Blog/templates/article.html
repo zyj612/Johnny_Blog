@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block title %}文章 {% endblock %}
+{% block extracss %} <link rel="stylesheet" href="{% static 'custome_css/comments.css' %}"> {% endblock %}
+{% block extrajs %}
+    <script type="text/javascript">
+    //回复顶级评论
+    $(".comment-reply-link").on("click",function(){
+        var id = this.id.substring(8);
+        alert(id);
+    //获取父评论的姓名
+    parent_comment_name = $("#parent_comment_name").text();
+    //获取节点的html内容
+    var $commentform= $("#commentreplybak").html();
+    var $commentreply = "commentreply-"+id;
+
+    //获取当前评论的表单元素
+    var $elementreply= $("#"+$commentreply);
+    //添加表单样式
+    $elementreply.html($commentform);
+    //在表单中添加父评论的id值
+    $elementreply.find("#comment_parent").attr('value',id);
+    //在表单中添加父评论是谁评论的(昵称)
+    $elementreply.find("#comment_parent_user").attr('value',parent_comment_name );
+
+    //取消评论
+    $elementreply.find("#cancel_submit").on("click",function(){
+        //删除被选元素的子元素
+        $elementreply.empty();
+    });
+    
+    }); 
+    </script>
+
+<script type="text/javascript">
+    //子评论回复子评论
+    $(".comment_reply_link_child").on("click",function(){
+        var child_id = this.id.substring(13);
+    //获取父评论的姓名
+    var reply_parent_comment_name = $("#reply_parent_comment_name").text();
+
+    var reply_parent_name=[];
+  
+    //使用正则匹配获取第一段字符
+    reply_parent_name = reply_parent_comment_name.split(/(\s+)/);
+    //reply_parent_comment_name = reply_parent_comment_name[0];
+    reply_parent_comment_name = reply_parent_name[0];
+
+
+    //获取节点的html内容
+    var $reply_commentform= $("#commentreplybak").html();
+    //console.log($commentform);
+    var $commentreply_child = "commentreply_child-"+child_id;
+ console.log($commentreply_child)
+    //获取当前评论的表单元素
+    var $elementreply_child= $("#"+$commentreply_child);
+    console.log($elementreply_child)
+    //添加表单样式
+    $elementreply_child.html($reply_commentform);
+    //在表单中添加父评论的id值
+    $elementreply_child.find("#comment_parent").attr('value',child_id);
+    //在表单中添加父评论是谁评论的(昵称)
+    $elementreply_child.find("#comment_parent_user").attr('value',reply_parent_comment_name);
+
+    //取消评论
+    $elementreply_child.find("#cancel_submit").on("click",function(){
+        //删除被选元素的子元素
+        $elementreply_child.empty();
+    });
+    
+    }); 
+</script>
+
+{% endblock %}
+{% block left-content %}
+    <article class="wall">
+        <div class="breadcrumb breadset">
+            <!-- 面包屑 -->
+            <span class="glyphicon glyphicon-home"></span>
+            <a title="Go to JohnnyBlog" href="/" class=" home">Blog</a>/
+            <a title="软件工程" href="{% url 'category_articles' %}?category={{article.category.id}}"> {{article.category}} </a>
+        </div>
+        <header class="article-header">
+            <h1 class="article-title">
+            <a href="#top">{{article.title}}</a>
+            </h1>
+            <div class="article-keyword">
+                关键词：
+                <span class="item">软件架构</span>
+                <span class="item">架构风格</span>
+            </div>
+        </header>
+        <article class="article-content">
+            
+        {% autoescape off %} {{article.content}} {% endautoescape %}
+    </article>
+    <div class="article-meta">
+        <span class="posttime"><i>posted@</i>{{article.date_publish|date:"Y/m/d h:m:s"}}</span>
+        <!--//文章关键词 上面放关键词,文章最下面放阅读、评论、点赞 -->
+        <span class="viewnum"><a class='iconfont' >&#xe6e4;</a>浏览({{article.click_count}})</span>
+        <span class="commentnum"><a class='iconfont' href="">&#xe704;</a>评论({{article.comment_set.all.count}})</span>
+        <span class="praisebtn"> <a class="iconfont" praise-flag="0" href="">&#xe71a;</a> ({{article.click_count}}) </span>
+    </div>
+    <div class="article-pager bs-example">
+        <ul class="pager">
+            {% if pre > 0 %}
+                <li class="previous">
+                    <a rel="prev" class="gotoArchive" href="{% url 'article' %}?id={{pre}}">上一篇</a>
+                </li>
+            {% endif %}
+            {% if next <= last_article_id %}
+                <li class="next">
+                    <a rel="next" class="gotoArchive" href="{% url 'article' %}?id={{next}}"">下一篇</a>
+                </li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="copyright alert alert-success post-copyright">
+        <p>作者：Johnny</p>
+        <p>
+            原文地址：&nbsp;<a href="">{{request.get_host}}{{request.get_full_path}}</a>
+        </p>
+        <p>
+            版权归属：&nbsp;<a href="#">Johnny &nbsp; </a> 转载时请以链接形式注明出处
+        </p>
+    </div>
+    
+    <div class="comments-wrap">
+        <div id="comments" data-url="">
+            <h3 id="comments-title" class="comments-header alert alert-info">
+            {{comments.count}}条评论
+            </h3>
+            <div id="loading-comments" style="display: none;">
+                <img src="" data-bd-imgshare-binded="1">
+            </div>
+            {% for comment in comment_list %}
+                <ol class="commentlist">
+                    <li id="comment">
+                        <article id="div-comment" class="comment-body">
+                            <header class="comment-meta">
+                                <div class="comment-author vcard">
+                                    <img src="" class="avatar avatar-70 photo" data-bd-imgshare-binded="1" height="60" width="60" />
+                                    <b class="fn">
+                                    <a id ="parent_comment_name" href="javascript:;" class="floor">{{comment.nickname}}</a>
+                                    </b>
+                                </div>
+                                <div class="comment-metadata">
+                                    <a href="javascript:;">
+                                        <time datetime="2016/6/24 21:08:04">{{comment.date_publish|date:"Y/m/d h:m:s"}}
+                                        <font color="#D2322D">{{forloop.counter}}楼</font></time>
+                                    </a>
+                                </div>
+                            </header>
+                            <div class="comment-content">
+                                <p>{{comment.content}}</p>
+                            </div>
+                            <div class="reply">
+                                <a class="comment-reply-link" id="comment-{{comment.id}}" href="javascript:;">回复</a>
+                            </div>
+                        </article>
+                        
+                        <form novalidate="novalidate" action="{% url 'comment_reply' %}" method="post" id="commentreply-{{comment.id}}" class="commentreply-form">
+                            {% csrf_token %}                            
+                        </form>
+
+                        {% if comment.comment_replies.all %}
+
+                       
+                        {% for commentreply in comment.comment_replies.all %}
+                        <ol class="commentlist">
+
+                        <li id="comment">
+                        <article id="div-comment-14" class="comment-body">
+                            <header class="comment-meta">
+                                <div class="comment-author vcard">
+                                    <img src="" class="avatar avatar-70 photo" data-bd-imgshare-binded="1" height="60" width="60" />
+                                    <b class="fn">
+                        <a id="reply_parent_comment_name" href="javascript:;" class="floor">{{commentreply.nickname}}&nbsp;&nbsp;回复&nbsp;&nbsp;{{commentreply.reply_to_nickname}}</a>
+                                    </b>
+                                </div>
+                                <div class="comment-metadata">
+                                    <a href="javascript:;">
+                                        <time datetime="2016/6/24 21:08:04">{{commentreply.date_reply|date:"Y/m/d h:m:s"}}
+                                        <font color="#D2322D"></font></time>
+                                    </a>
+                                </div>
+                            </header>
+                            <div class="comment-content">
+                                <p>{{commentreply.content}}</p>
+                            </div>
+
+                            
+
+                            <div class="reply" >
+                                <a class="comment_reply_link_child" id="commentreply-{{commentreply.id}}" href="javascript:;">回复</a>
+                            </div>
+                            </article>
+
+
+            <form novalidate="novalidate" action="{% url 'comment_reply_child' %}" method="post" id="commentreply_child-{{commentreply.id}}" class="commentreply-form">
+                                         
+            </form>
+                    </li>
+                            </ol>
+                        {% endfor %}
+                        {% endif %}
+                    </li>
+                    
+                </ol>
+            {% endfor %}
+
+            
+            {% include 'pagination_comments.html' %}
+            
+            <div id="respond" class="comment-respond">
+                <h3 id="reply-title" class="comment-reply-title">
+                <i class="fa fa-pencil"></i>
+                快来评论
+                <small>
+                </small>
+                </h3>
+                
+                <form novalidate="novalidate" action="{% url 'comment_post' %}" method="post" id="commentform" class="comment-form">
+                    {% csrf_token %}
+                    
+                    
+                    <input id="vid" name="VId" value="" type="hidden">
+                    <div class="row">
+                        <div class="col-md-6" style="float:none">
+                            
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-user"></span></div>
+                                    <input size="20" id="name" name="NickName" class="form-control"
+                                    {% if request.user.is_authenticated %}
+                                        value="{{request.user.nickname}}" readonly="readonly"
+                                    {% else %}
+                                        placeholder="起个昵称吧"
+                                        value=""
+                                    {% endif %}  required="" type="text">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></div>
+                                    <input size="20" id="email" name="BEmail" class="form-control"
+                                    {% if request.user.is_authenticated %}
+                                        value="{{request.user.email}}" readonly="readonly"
+                                    {% else %}
+                                        placeholder="请输入您的邮箱"
+                                        value=""
+                                    {% endif %}  required="" type="text">
+                                    
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <textarea id="comment" class="form-control" placeholder="赶快发表你的见解吧!" name="CmtText" cols="30" rows="3" required=""></textarea>
+                    
+                    <p class="form-submit">
+                        <input name="submit" class="hiddeninput" id="submit" value="发表评论" type="submit">
+                        <input name="CmtArtId" class="hiddeninput" value="{{article.id}}" id="comment_post_ID" type="hidden">
+
+                        <input name="UserId" id="UserId" class="hiddeninput" 
+                        {% if request.user.is_authenticated %}
+                        value="{{request.user.id}}" 
+                        {% else %}
+                        value="0"
+                        {% endif %}
+                        type="hidden">
+                        <input name="ParentId" class="hiddeninput" value="0" id="comment_parent" type="hidden">
+                        <input name="PageSize" id="PageSize" class="hiddeninput" value="5" type="hidden">
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <form novalidate="novalidate" action="" method="post" id="commentreplybak" class="comment-reply" style="display: none;">
+    {% csrf_token %}   
+        
+        <input id="vid" name="VId" value="" type="hidden">
+        <div class="row">
+            <div class="col-md-6" style="float:none">
+                
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon"><span class="glyphicon glyphicon-user"></span></div>
+                        <input size="20" id="name" name="NickName" class="form-control"
+                        {% if request.user.is_authenticated %}
+                            value="{{request.user.nickname}}" readonly="readonly"
+                        {% else %}
+                            placeholder="起个昵称吧"
+                            value=""
+                        {% endif %}  required="" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                
+                <div class="form-group">
+                    <div class="input-group">
+                        <div class="input-group-addon"><span class="glyphicon glyphicon-envelope"></span></div>
+                        <input size="20" id="email" name="BEmail" class="form-control"
+                        {% if request.user.is_authenticated %}
+                            value="{{request.user.email}}" readonly="readonly"
+                        {% else %}
+                            placeholder="请输入您的邮箱"
+                            value=""
+                        {% endif %}  required="required" type="email">
+                        
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+        <textarea id="comment" class="form-control" placeholder="赶快发表你的见解吧!" name="CmtText" cols="30" rows="3" required="required"></textarea>
+        
+        <p class="form-submit">
+            <input name="submit" class="hiddeninput" id="submit" value="发表评论" type="submit">
+            <input name="submit" class="hiddeninput" id="cancel_submit" value="取消" type="button">
+
+            <input name="ReplyTo" class="hiddeninput" value="{{comment.nickname}}" id="comment_parent_user" type="hidden">
+
+            <input name="ParentComment" class="hiddeninput" value="" id="comment_parent" type="hidden">
+
+            <input name="CmtArtId" class="hiddeninput" value="{{article.id}}" id="comment_post_ID" type="hidden">
+            <input name="UserId" class="hiddeninput" 
+            {% if request.user.is_authenticated %}
+            value="{{request.user.id}}" 
+            {% else %}
+            value="0" 
+            {% endif %}
+            id="comment_parent" type="hidden">
+            <input name="PageSize" id="PageSize" class="hiddeninput" value="" type="hidden">
+        </p>
+    </form>
+</article>
+
+{% endblock %}

@@ -1,0 +1,245 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>个人信息</title>
+
+	<link rel="icon" href="{% static 'images/blog.ico' %}" type="image/x-icon">
+	<link rel="stylesheet" href="{% static 'css/cropper.css' %}">
+<style>
+    .container {
+      margin: 20px auto;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    .cropper-view-box,
+    .cropper-face {
+      border-radius: 50%;
+    }
+
+    #result{
+    	width:100%;
+    	height: 100%;
+    }
+  </style>
+</head>
+<body>
+<div>
+	<ul>
+		<li>{{request.user.username}}</li>
+		<li>{{request.user.email}}</li>
+		<li>
+			<form method="post" action={% url 'updateUser' %} enctype="multipart/form-data">
+			{% csrf_token %}
+		
+			</form>
+		</li>
+		<li>
+			<form method="post" action={% url 'updateUser' %} enctype="multipart/form-data">
+
+			{% csrf_token %}
+			<a href="">头像预览</a>
+			 <div id="result"></div>
+		<button id="uploadavatar" type="button" style="display: none;">上传图片</button>
+			</form>
+		</li>
+	</ul>
+</div>
+     <a href="">头像设置</a> 
+ <div class="container">
+
+    <img id="image" src="" alt="Picture">
+  </div>
+  
+    <p>
+    <input type="file">
+      <button type="button" id="button">剪切</button>
+    </p> 
+  
+</body>
+<script src="../static/js/jquery.min.js" type="text/javascript"></script>
+<script src="../static/js/cropper.js" type="text/javascript"></script>
+<script>
+
+
+var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+//上传图片触发这个事件
+	$("input[type=file]").on("change",  function(event){
+		
+//value的值会显示路径文件路径地址，显示C:\fakepath\*.jpg
+if(!this.value) return;
+//获取图片文件
+var file = this.files[0];
+readImgFile(file);
+
+});
+
+function readImgFile(file){
+var reader = new FileReader(file);
+var img = $("#image")[0];
+//检验用户是否选则是图片文件
+if(file.type.split("/")[0] !== "image"){
+alert("请选择图片类型文件");
+return;
+};
+
+//这个函数是异步的，在readAsDataURL之后触发,在return之后才执行,这里要取异步执行之后的结果。
+
+
+//读取文件内容，readAsDataURL这个api能够把二进制图片内容转成base64的格式。
+reader.readAsDataURL(file);
+
+//异步事件
+reader.onload = function(event) {
+
+
+//获取file的base64码
+var base64 = event.target.result;
+img.src = base64;
+
+};
+
+//这也是一个异步时间图片加载完成会调用
+img.onload=function(){	
+$(".container").width(img.naturalWidth+10);
+$(".container").height(img.naturalHeight+10);
+init();
+};
+
+// createCanvas(img);
+//filesize=file.size/1024;//转换为kb
+
+};
+/*
+function createCanvas(img){
+
+console.log(img.naturalWidth);
+//<canvas>有自己的默认宽高300px*150px，
+img.onload=function(){
+console.log(this.naturalWidth);
+};
+//创建画布
+var cvs = document.createElement('canvas');
+var ctx=cvs.getContext("2d");
+
+//$(".container")[0].appendChild(cvs);
+}*/
+
+function init() {
+        var image = document.getElementById('image');
+        var button = document.getElementById('button');
+        var result = document.getElementById('result');
+        var croppable = false;
+        var cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+		  //控制那个截图的圈是否可以放大
+		  //cropBoxResizable:true,
+		  //toggleDragModeOnDblclick:true,
+		  //background:false,
+          ready: function () {
+            croppable = true;
+          }
+        });
+
+        button.onclick = function () {
+          var croppedCanvas;
+          var roundedCanvas;
+          var roundedImage;
+
+          if (!croppable) {
+            return;
+          }
+
+          // Crop
+          croppedCanvas = cropper.getCroppedCanvas();
+          // Round
+          roundedCanvas = getRoundedCanvas(croppedCanvas);
+          // Show
+          roundedImage = document.createElement('img');
+          var data = roundedCanvas.toDataURL();
+          roundedImage.src = data;
+
+//转换base64的图片为普通图片
+
+data=data.split(',')[1];
+data=window.atob(data);
+var ia = new Uint8Array(data.length);
+for (var i = 0; i < data.length; i++) {
+    ia[i] = data.charCodeAt(i);
+};
+
+// canvas.toDataURL 返回的默认格式就是 image/png
+var blob=new Blob([ia], {type:"image/png"});
+console.log(blob)
+	var fd=new FormData();
+ 	fd.append('file',blob);
+
+ function updateAvatar(){
+ 
+    $.ajax({
+ 
+    url:"{% url 'updateUser' %}",
+    type:"POST",
+    data:fd,
+    processData: false,
+    contentType:false,
+    success:function(result){
+    	alert(result)
+   		}
+	})
+    
+};
+		result.innerHTML = '';
+        result.appendChild(roundedImage);
+        $("#uploadavatar").css('display','');
+		$("#uploadavatar").on('click',updateAvatar);
+
+        };
+
+      };
+	  
+	
+
+      function getRoundedCanvas(sourceCanvas) {
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        var width = sourceCanvas.width;
+        var height = sourceCanvas.height;
+		//画布设置宽高
+        canvas.width = width;
+        canvas.height = height;
+		//设置图片是否平滑的属性
+        context.imageSmoothingEnabled = true;
+        context.drawImage(sourceCanvas, 0, 0, width, height);
+		//在源图像中显示目标图像。只有源图像内的目标图像部分会被显示，源图像是透明的。
+		//控制截取之后的图像
+        context.globalCompositeOperation = 'destination-in';
+        context.beginPath();
+        context.arc(width / 2, height / 2, Math.min(width, height) / 2, 0, 2 * Math.PI, true);
+		//context.arc(width / 2, height / 2, 50, 0, 2 * Math.PI, true);
+        context.fill();
+
+        return canvas;
+      };
+
+     
+    
+
+</script>
+</html>
