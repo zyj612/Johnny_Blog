@@ -41,7 +41,8 @@ urlpatterns = [
     url(r'^logout/$',index_view.blog_logout,name='logout'),
     url(r'^userinfo/$',index_view.get_userinfo,name='userinfo'),
     url(r'^updateuser/$',index_view.updateUser,name='updateUser'),
-    url(r'^usercheck/$',index_view.username_check,name="userNameCheck")
+    url(r'^usercheck/$',index_view.username_check,name="userNameCheck"),
+    url(r'^aboutblog/$',index_view.aboutBlog,name="aboutblog")
 
 ]
 
