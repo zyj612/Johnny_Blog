@@ -362,6 +362,8 @@ def username_check(request):
     except Exception as e:
         logger(e)
 
+def aboutBlog(request):
+    return render(request, 'failure.html', {'reason': '关于本站正在开发中'})
 
 
 
