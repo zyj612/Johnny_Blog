@@ -33,6 +33,31 @@
         color: #000;
         background: url(../static/images/ico_xlwb2.png) no-repeat scroll 0% 0% transparent;
         }
+
+
+#back-to-top{
+
+  position:fixed;
+
+  display:none;
+ 
+  bottom:80px;
+    
+  right:80px;
+    
+  z-index:99999;
+}
+
+
+#back-to-top span{
+
+background-color:#3e8f3e;
+
+color:#fff;
+
+opacity: 0.8;
+
+font-size:46px;}
         
         
         </style>
@@ -215,7 +240,7 @@
         <input type="hidden" name="source_url" value="{{request.get_full_path}}">
         </form>
 
-
+<div id="back-to-top"><a href=""><span class="glyphicon glyphicon-chevron-up"></span></a></div>
     </body>
     <script src="../static/js/jquery.js" type="text/javascript"></script>
     
@@ -356,7 +381,6 @@ if($("#bomp_submit").text()=="注册")
 
 //检测用户名是否存在
 function userNameCheck(){
-    alert(1111111111);
     showText.innerHTML = "";
 
 var userName = $(':input[name=bomp_username]').val();
@@ -370,12 +394,10 @@ $.post(
         if (result=="notexist")
         {
            $("#bomp_submit").on('click',register_check); 
-           alert(654321)
        }
         else{
              showText.innerHTML = result
              $("#bomp_submit").on('click',function(){
-            alert(123456)
         });
 
         }
@@ -435,8 +457,6 @@ function signin_check(){
 };
 
 function register_check(){
-
-alert("register_check")
     var userName = $(':input[name=bomp_username]').val();
      var password=$(':input[name=bomp_password]').val();
       var nickname=$(':input[name=bomp_nickname]').val();
@@ -497,9 +517,35 @@ console.log($.cookie('sessinonid'))
 
 }();
 */
+</script>
 
+<script type="text/javascript">
+    $(function(){
+       $(function () {
+            $(window).scroll(function(){
+                if ($(window).scrollTop()>50){
+                    $("#back-to-top").fadeIn(1500);
+                }
+                else
+                {
+                    $("#back-to-top").fadeOut(1500);
+                }
+            });
 
-    
+            //当点击跳转链接后，回到页面顶部位置
+            $("#back-to-top").click(function(){
+                //$('body,html').animate({scrollTop:0},1000);
+        if ($('html').scrollTop()) {
+        //当滚动条的滑动距离不为0的时候点击按钮向上跳转
+                $('html').animate({ scrollTop: 0 }, 10);
+                return false;
+            }
+            $('body').animate({ scrollTop: 0 }, 10);
+                 return false;            
+           });       
+    });
+});
+
 </script>
 
 </html>

@@ -1,9 +1,7 @@
 import os
-import time
-
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponse
-import simplejson as simplejson
+import json as simplejson
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
