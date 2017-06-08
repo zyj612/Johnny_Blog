@@ -73,8 +73,6 @@ console.log(w2-w1)
 	}
 },
 
-
-
 	bound_sign:function (){
 		$(".header_s").on("click",function(){
 		$(this).removeAttr("href");
@@ -121,6 +119,8 @@ console.log(w2-w1)
 			$("<style type='text/css'>.aBody{padding-right:" + 0 + "px;}</style>").appendTo("head");
 			$("<style type='text/css'>#fix-padding{padding-right:" + 0 + "px;}</style>").appendTo("head");
 			$("#form_signin").css("display","none");
+			//close登录框，都要把登陆信息清空
+			$("#showText").text("");
 		})
 	},
 
@@ -132,6 +132,7 @@ bound_register:function(){
 		$("#bomp_email").css("display","table");
 		$("#lable_check").css("display","none");
 		$("#bomp_submit").text("注册");
+		$("#bomp_submit").on('click',register_check);
 		$("#singin_container").height("320px");
 		$("#form_signin").attr("action","/register/");
 },
@@ -140,7 +141,6 @@ bound_register:function(){
 
 
 login:function() {
-
 
 this.disable_scroll();
 this.login_register();
@@ -159,14 +159,11 @@ if(!document.getElementById("div_background"))
 		this.bound_click();
 	}
 
-	else{
-		if(document.getElementById("div_background")) 
-		{
+	else{		
 			this.disable_scroll();
 			$("#form_signin").css("display","block");
 			this.bound_register()
 			this.bound_click();
-		}
 	}
 
 this.bound_sign();

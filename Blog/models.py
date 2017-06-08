@@ -146,7 +146,7 @@ class CommentReply(models.Model):
         verbose_name = '回复评论'
         verbose_name_plural = verbose_name
     def __str__(self):
-        return '{0}->{1}'.format(self.user, self.to)
+        return '{0}->{1}'.format(self.nickname, self.reply_to_nickname)
 
 
 

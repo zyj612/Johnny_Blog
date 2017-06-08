@@ -108,3 +108,31 @@ p.form-submit :hover{
 	border-radius: 3px;
 	text-align:center;
 }
+
+.comment-log {
+    line-height: 20px;
+    background-color: #eee;
+    border-color: #eee;
+    border-radius: 4px;
+    display: inline-block;
+    padding: 8px;
+    margin-left: 10px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 80%;
+}
+
+.user-avatar .avatar {
+    border-radius: 50%;
+    border: 1px solid #eee;
+    position: relative;
+    z-index: 99;
+    float: left;
+    display: block;
+    -webkit-transition: all .3s ease;
+    -moz-transition: all .3s ease;
+    -o-transition: all .3s ease;
+    transition: all .3s ease;
+}
+

@@ -203,12 +203,11 @@ p a:hover{
 }
 
 
-.panel .post-title {
-	white-space: nowrap;
+.panel .post-title p{
 	display: inline-block;
-	width: 75%;
+	width: 90%;
 	white-space: nowrap;
-	text-overflow: ellipsis;
+	text-overflow: '。。。';
 	overflow: hidden;
 }
 
@@ -298,7 +297,7 @@ background-color: #664fd9;
 #article-list .excerpt .note {
 	font-size: 14px;
 	color: #838383;
-	word-wrap: break-word;
+	/*word-wrap: break-word;*/
 	line-height: 20px;
 }
 

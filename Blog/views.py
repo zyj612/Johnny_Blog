@@ -22,7 +22,7 @@ def global_content(request):
     article_category = Category.objects.all()
     articles= Article.objects.all()[:10]
     cursor = connection.cursor()
-    cursor.execute("(SELECT nickname,avatar,content ,id as comment_id ,article_id,user_id,date_publish as date_order FROM blog_comment) UNION (SELECT nickname,avatar,content,comment_id,article_id,user_id,date_reply as date_order FROM blog_commentreply) order by date_order desc LIMIT 10;")
+    cursor.execute("SELECT nickname,avatar,content ,id as comment_id ,article_id,user_id,date_publish as date_order FROM blog_comment UNION SELECT nickname,avatar,content,comment_id,article_id,user_id,date_reply as date_order FROM blog_commentreply order by date_order desc LIMIT 10;")
 
     last_comments =cursor.fetchall()
 
@@ -86,12 +86,10 @@ def article(request):
         try:
             #精确查询,这里的id是字符串类型
             article=Article.objects.get(pk=id)
-            print(article.id)
+            print(settings.STATIC_ROOT)
             #get匹配一条结果，filter匹配多条结果
             comments = Comment.objects.filter(article_id=article.id).order_by('date_publish')
             comment_list=comments_pagionation(request,comments)
-            print('xxxx')
-            print(comment_list.paginator.num_pages)
         except Article.DoesNotExist:
             return render(request,'failure.html',{'reason':'文章不存在'})
     except Exception as e:
@@ -135,13 +133,14 @@ def comment_post(request):
             useremail = request.POST['BEmail']
             cmtcontent = request.POST['CmtText']
             articleid  = request.POST['CmtArtId']
+            #考虑匿名提交情况
             userid = request.POST['UserId']
-            User.objects.get(pk=userid)
+
             comment = Comment.objects.create(nickname=nickname,
                                              email=useremail,
                                              content=cmtcontent,
                                              article_id=articleid,
-                                             user_id = userid,)
+                                             user_id = userid if userid !="0" else None,)
             comment.save()
     except Exception as e:
         logger.error(e)
@@ -159,7 +158,6 @@ def comment_reply(request):
             useremail = request.POST['BEmail']
             rpycontent = request.POST['CmtText']
             parentcomment = request.POST['ParentComment']
-            request.POST['UserId']
             userid =request.POST['UserId']
             replyto_nickname = request.POST['ReplyTo']
             cmtartid = request.POST['CmtArtId']
@@ -194,7 +192,7 @@ def comment_reply_child(request):
             rpycontent = request.POST['CmtText']
             userid = request.POST['UserId']
             cmtartid = request.POST['CmtArtId']
-            print(cmtartid)
+
             #这里是回复顶级评论的时候
             user = CommentReply.objects.get(pk =request.POST['ParentComment'] )
             #回复具体那条子评论的id
@@ -219,8 +217,8 @@ def comment_reply_child(request):
 
 def comments_pagionation(request,comments):
     try:
-        #自定义的分页器，初始化一页的文章总数为1,可以客制化
-        paginator = extendpaginator.extendPaginator(comments, 1)
+        #自定义的分页器，初始化一页的评论总数为1,可以客制化
+        paginator = extendpaginator.extendPaginator(comments, 5)
         # 获取客户端提交的request,然后设置默认为第一页
         page = int(request.GET.get('cmt',1))
         comment_list = paginator.page(page)

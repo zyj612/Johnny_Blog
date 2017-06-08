@@ -56,6 +56,21 @@ font-size: 16px;
 	text-align: right;
 }
 
+
+/*
+只争对webkit内核的浏览器
+#article-list .excerpt p{
+ width:100%;
+    display:box;
+    display:-webkit-box;
+    box-orient: vertical;
+    -webkit-box-orient:vertical;
+   -webkit-line-clamp:6;
+    overflow:hidden;
+   word-break:break-all;
+}
+*/
+
 .alert {
 	padding: 15px;
 	margin-bottom: 20px;

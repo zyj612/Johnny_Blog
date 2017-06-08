@@ -137,9 +137,10 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = [
-    os.path.join(BASE_DIR, "static"),
-]
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+#设置根目录存在静态文件，具体参考的自强学堂的教程
+STATICFILES_DIRS = [BASE_DIR,]
 
 
 logging.basicConfig(
