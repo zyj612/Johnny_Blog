@@ -284,6 +284,15 @@ $("#hot_article,#archive_list,#zyj_latest_comments").find(".panel-remove").on("c
 
 
 <script type="text/javascript">
+
+//防止django的403报错
+var csrftoken = $("[name=csrfmiddlewaretoken]").val();
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
 //点击动画的实现方式
 //文档load完自动加载一个tipsBox 方法
 (function ($) {
@@ -301,8 +310,7 @@ $("#hot_article,#archive_list,#zyj_latest_comments").find(".panel-remove").on("c
             }, options);
             $("body").append("<span class='num'>" + options.str + "</span>");
             var box = $(".num");
-            var left = options.obj.offset().left + options.obj.width() / 2;
-            
+            var left = options.obj.offset().left + options.obj.width() / 2;           
             var top = options.obj.offset().top - options.obj.height();
             box.css({
                 "position": "absolute",
@@ -323,21 +331,63 @@ $("#hot_article,#archive_list,#zyj_latest_comments").find(".panel-remove").on("c
 })(jQuery);
 
 function niceIn(prop){
-    prop.find('a').addClass('niceIn');
+    prop.find('.iconfont').addClass('niceIn');
     setTimeout(function(){
-        prop.find('a').removeClass('niceIn');    
+        prop.find('.iconfont').removeClass('niceIn');    
     },1000);        
 }
+
 $(function () {
+
+    //提交点赞数据
     $(".praisebtn").click(function () {
-       
-    //tipsBox是一个自定义的方法
-        $.tipsBox({
-            obj: $(this),         
+        $that = $(this);
+        
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+})
+//获取括号中的点击量
+//var numPraise = $(this).find(".numpraise").text();
+//获取文章的点击数，和文章的id
+//numPraise = numPraise.match(/\d+/)[0];
+artid = $(this).find(".articleid").text();
+data={//"numpraise":numPraise,
+"artid":artid,
+}
+$.post(
+    "{% url 'countPraise' %}", 
+
+    {data:JSON.stringify(data)},
+
+    function(result){
+        console.log(result);
+//ajax返回成功调用+1动画
+if(result.b=="成功")
+{
+
+ $.tipsBox({
+            obj: $that,         
         });      
-        niceIn($(this));
+        niceIn($that);
+    $that.find(".numpraise").text("("+result.a+")")
+}
+else{
+    alert(result.a)
+}
+
+    }) 
+  
+    //自定义一个tipsBox方法
+       
     });
+
 });
+
+
 </script>
 
 <script src="../static/js/signin.js" type="text/javascript"></script>
@@ -392,8 +442,6 @@ $.post(
     "{% url 'userNameCheck' %}", 
     {data:userName},
     function(result){
-        
-        console.log(result);
         if (result=="notexist")
         {
            $("#bomp_submit").on('click',register_check); 
@@ -444,7 +492,6 @@ function signin_check(){
              $.post("{% url 'login' %}", {data:JSON.stringify(userinfo)},function(result){
                 //alert('接收到数据')
                     if(result.result!="登陆成功"){
-                        console.log(result.result)
         //这边也可以使用result[result];
                        showText.innerHTML = result.result;
                     }
@@ -508,13 +555,9 @@ showText.innerHTML = "邮箱格式不正确";
     }
 
 };
-
 /*
 +function setSessionDate(){
     var cDate = new Date();
-
-console.log($.cookie('sessinonid'))
-
 }();
 */
 </script>
@@ -549,6 +592,15 @@ console.log($.cookie('sessinonid'))
 
 </script>
 
+<script type="text/javascript">
+/*
 
 
+//提交总数
+$(".praisebtn").on("click",
+  )
+    */
+
+
+</script>
 </html>

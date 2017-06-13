@@ -1,5 +1,7 @@
+import datetime
 import os
 from django.conf import settings
+from django.db.models import F
 from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponse
 import json as simplejson
 from django.contrib.auth import login, authenticate, logout
@@ -7,7 +9,7 @@ from django.contrib.auth.hashers import make_password
 from django.shortcuts import render, redirect
 from pip import logger
 
-from Blog.models import Article, Category, Comment, CommentReply, User
+from Blog.models import *
 from django.core.paginator import Paginator, EmptyPage,InvalidPage,PageNotAnInteger
 from .custome_pythoncode import extendpaginator
 from django.db import connection
@@ -268,7 +270,6 @@ def blog_register(request):
 def blog_login(request):
     try:
         if request.is_ajax():
-            print('ajax,ajax')
             #前端直接发送json数据过来
             username_json = simplejson.loads(request.POST['data'])
             username = username_json['userName']
@@ -361,6 +362,47 @@ def username_check(request):
 def aboutBlog(request):
     return render(request, 'failure.html', {'reason': '关于本站正在开发中'})
 
+def countPraise(request):
+    if request.is_ajax():
+        praiseInfo = simplejson.loads(request.POST['data'])
+        artid = praiseInfo['artid']
+        dt = datetime.datetime.now()
+        dt_db =dt
+        #这里的m必须小写,大写表示分钟,格式化时间
+        dt = dt.strftime("%Y%m%d")
+        #获取用户的IP
+        user_ip = request.META['REMOTE_ADDR']
+        try:
+            userpraises = UserPraises.objects.get(user_ip=user_ip)
+            praisedate = userpraises.praise_date
+            praisedate = praisedate.strftime("%Y%m%d")
+            #当前ip的所有赞
+            totalpraise = int(userpraises.total_praise)
+            artid = userpraises.article_id
+            userip = userpraises.user_ip
+            if dt == praisedate:
+                result = {"a":"您今天已经赞过","b":"失败"}
+                return JsonResponse(result)
+            else:
+                totalpraise = totalpraise+1
+                UserPraises.objects.filter(user_ip=userip).update(total_praise=totalpraise,praise_date= dt_db)
+                Article.objects.filter(id = artid).update(praise_count = F('praise_count')+1 )
+                clickcounts = Article.objects.get(id = artid)
+                clickcount = clickcounts.praise_count
+                result = {"a":clickcount,"b":"成功"}
+                return JsonResponse(result)
+        except UserPraises.DoesNotExist:
+            userpraises =UserPraises.objects.create(
+                article_id = artid,
+                user_ip = user_ip,
+                total_praise = 1,
+            )
+            userpraises.save()
+            Article.objects.filter(id=artid).update(praise_count=F('praise_count') + 1)
+            clickcounts = Article.objects.get(id=artid)
+            clickcount = clickcounts.praise_count
+            result = {"a": clickcount,"b":"成功"}
+            return JsonResponse(result)
 
 
 

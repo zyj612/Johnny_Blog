@@ -42,7 +42,8 @@ urlpatterns = [
     url(r'^userinfo/$',index_view.get_userinfo,name='userinfo'),
     url(r'^updateuser/$',index_view.updateUser,name='updateUser'),
     url(r'^usercheck/$',index_view.username_check,name="userNameCheck"),
-    url(r'^aboutblog/$',index_view.aboutBlog,name="aboutblog")
+    url(r'^aboutblog/$',index_view.aboutBlog,name="aboutblog"),
+    url(r'^praise/$',index_view.countPraise,name="countPraise"),
 
 ]
 

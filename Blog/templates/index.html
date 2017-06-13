@@ -22,13 +22,14 @@ $(function(){
 					</h2>
 				</header>
 				<p class="meta">
-					<span class="posttime"><a class='iconfont' href="#">&#xe735;</a>{{article.date_publish|date:"Y/m/d"}}</span>
+					<span class="posttime"><a class='iconfont' >&#xe735;</a>{{article.date_publish|date:"Y/m/d"}}</span>
 
 					<span class="viewnum"><a class='iconfont' href="#">&#xe6e4;</a>浏览({{article.click_count}})</span>
 
 					<span class="commentnum"><a class='iconfont' href="javascript:;">&#xe704;</a>评论({{article.comment_set.all.count}})</span>
 
-					<span class="praisebtn"> <a class="iconfont" praise-flag="0" href="/">&#xe71a;</a> ({{article.click_count}}) </span>
+					<span class="praisebtn"> <a class="iconfont">&#xe71a;</a><a class="numpraise">({{article.praise_count}})</a>
+					<a class="articleid" style="display: none;">{{article.id}}</a></span>
 				</p>
 				<div class="note">{% autoescape off %} {{article.content}} {% endautoescape %}</div>
 				<footer class="entry-footer">

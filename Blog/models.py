@@ -89,8 +89,8 @@ class Article(models.Model):
     content = UEditorField('内容', height=300, width=1000,
                            default=u'', blank=True, imagePath="uploads/images/",
                            toolbars='besttome', filePath='uploads/files/')
-    click_count = models.IntegerField(default=0, verbose_name='点击次数')
-    is_recommend = models.BooleanField(default=False, verbose_name='是否推荐')
+    click_count = models.IntegerField(default=0, verbose_name='阅读次数')
+    praise_count = models.IntegerField(default=0, verbose_name='点赞总数')
     date_publish = models.DateTimeField(auto_now_add=True, verbose_name='发布时间')
     user = models.ForeignKey(User, verbose_name='用户')
     #ForeignKey是多对一，ManyToManyField是多对多，这里的多对一是指该字段
@@ -148,8 +148,6 @@ class CommentReply(models.Model):
     def __str__(self):
         return '{0}->{1}'.format(self.nickname, self.reply_to_nickname)
 
-
-
 # 友情链接
 class Links(models.Model):
     title = models.CharField(max_length=50, verbose_name='标题')
@@ -163,7 +161,15 @@ class Links(models.Model):
         verbose_name_plural = verbose_name
         ordering = ['index', 'id']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
+
+#统计点赞的表,表中的id是自己自动增加的
+class UserPraises(models.Model):
+    article = models.ForeignKey(Article,verbose_name="文章")
+    total_praise = models.CharField(max_length=10,verbose_name="累计总数")
+    user_ip = models.CharField(max_length=20,verbose_name="用户IP地址")
+    praise_date = models.DateTimeField(auto_now_add=True,verbose_name="点击时间")
+
 
 
